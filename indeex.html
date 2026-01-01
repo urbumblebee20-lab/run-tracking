@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Running Tracker</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <header>
+    <h1>🏃 Running Tracker</h1>
+    <p>Track your run distance live</p>
+  </header>
+
+  <div id="map"></div>
+
+  <div class="info">
+    <div class="card">
+      <h3>Distance</h3>
+      <p id="distance">0.00 km</p>
+    </div>
+    <div class="card">
+      <h3>Status</h3>
+      <p id="status">Not Running</p>
+    </div>
+  </div>
+
+  <div class="controls">
+    <button id="startBtn">▶ Start</button>
+    <button id="stopBtn" disabled>⏹ Stop</button>
+  </div>
+
+  <!-- Google Maps API -->
+  <script
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCgp1i6Pe2arUEccK_cO4HT3TA3UxAupFk">
+  </script>
+
+  <script src="script.js"></script>
+</body>
+</html>
