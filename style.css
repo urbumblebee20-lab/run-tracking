@@ -1,3 +1,17 @@
+:root {
+  --bg: #f4f6f9;
+  --card: #ffffff;
+  --text: #333;
+  --primary: #2e86de;
+}
+
+body.dark {
+  --bg: #121212;
+  --card: #1f1f1f;
+  --text: #f1f1f1;
+  --primary: #6ab0ff;
+}
+
 * {
   margin: 0;
   padding: 0;
@@ -6,80 +20,77 @@
 }
 
 body {
-  background: #f4f6f9;
-  color: #333;
+  background: var(--bg);
+  color: var(--text);
 }
 
 header {
+  background: var(--primary);
+  color: white;
   text-align: center;
   padding: 15px;
-  background: #1e90ff;
-  color: white;
+}
+
+header button {
+  margin-top: 8px;
+  padding: 6px 14px;
+  border-radius: 15px;
+  border: none;
+  cursor: pointer;
 }
 
 #map {
-  width: 100%;
   height: 55vh;
+  width: 100%;
 }
 
 .info {
   display: flex;
   justify-content: space-around;
   margin: 15px;
+  gap: 10px;
 }
 
 .card {
-  background: white;
+  background: var(--card);
   padding: 15px;
-  width: 45%;
+  width: 30%;
   border-radius: 10px;
   text-align: center;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
 }
 
 .card p {
   font-size: 1.4rem;
   font-weight: bold;
-  margin-top: 5px;
 }
 
 .controls {
   display: flex;
   justify-content: center;
-  gap: 20px;
+  gap: 15px;
   margin-bottom: 20px;
 }
 
 button {
   padding: 12px 25px;
-  font-size: 1.1rem;
-  border: none;
+  font-size: 1.05rem;
   border-radius: 25px;
+  border: none;
   cursor: pointer;
 }
 
-#startBtn {
-  background: #28a745;
-  color: white;
-}
-
-#stopBtn {
-  background: #dc3545;
-  color: white;
-}
+#startBtn { background: #27ae60; color: white; }
+#stopBtn { background: #c0392b; color: white; }
+#finishBtn { background: #8e44ad; color: white; }
 
 button:disabled {
-  background: #aaa;
-  cursor: not-allowed;
+  background: #999;
 }
 
-/* Mobile optimization */
 @media (max-width: 600px) {
   .info {
     flex-direction: column;
-    gap: 10px;
   }
-
   .card {
     width: 100%;
   }

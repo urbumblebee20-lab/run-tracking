@@ -1,111 +1,153 @@
-let map;
-let polyline;
-let watchId = null;
-let path = [];
-let totalDistance = 0;
-let lastPosition = null;
+// 🔥 Firebase imports
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-app.js";
+import { getDatabase, ref, push, set } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-database.js";
 
+// 🔹 Firebase config (YOUR CONFIG)
+const firebaseConfig = {
+  apiKey: "AIzaSyAbIffq1kXSpwmAL8Q-Jv9lyPXdOfx7jK8",
+  authDomain: "live-run-tracking.firebaseapp.com",
+  databaseURL: "https://live-run-tracking-default-rtdb.firebaseio.com",
+  projectId: "live-run-tracking",
+  storageBucket: "live-run-tracking.firebasestorage.app",
+  messagingSenderId: "740131513256",
+  appId: "1:740131513256:web:4eed9299eae062c139339d",
+  measurementId: "G-XBHCM1E518"
+};
+
+// 🔹 Initialize Firebase
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
+
+// ================================
+// 🏃 RUN TRACKER VARIABLES
+// ================================
+let map, polyline;
+let watchId = null;
+let totalDistance = 0;
+let lastPos = null;
+let route = [];
+let startTime = null;
+let timerInterval = null;
+let runId = null;
+
+// UI elements
 const distanceEl = document.getElementById("distance");
-const statusEl = document.getElementById("status");
+const timerEl = document.getElementById("timer");
+const speedEl = document.getElementById("speed");
 const startBtn = document.getElementById("startBtn");
 const stopBtn = document.getElementById("stopBtn");
+const finishBtn = document.getElementById("finishBtn");
+const darkBtn = document.getElementById("darkModeBtn");
 
-/* 🔹 1. LOAD MAP ON PAGE OPEN */
+// 🌙 Dark mode
+darkBtn.onclick = () => document.body.classList.toggle("dark");
+
+// 🗺️ Load map
 window.onload = () => {
-  if (!navigator.geolocation) {
-    alert("Geolocation not supported");
-    return;
-  }
-
   navigator.geolocation.getCurrentPosition(
-    (position) => {
-      const lat = position.coords.latitude;
-      const lng = position.coords.longitude;
-      initMap(lat, lng);
-    },
-    () => {
-      alert("Please allow location to load the map");
-    }
+    pos => initMap(pos.coords.latitude, pos.coords.longitude),
+    () => alert("Allow location access")
   );
 };
 
-/* 🔹 2. INITIALIZE MAP */
 function initMap(lat, lng) {
-  map = new google.maps.Map(document.getElementById("map"), {
-    center: { lat, lng },
-    zoom: 16,
-  });
-
-  polyline = new google.maps.Polyline({
-    map: map,
-    path: [],
-    strokeColor: "#ff0000",
-    strokeWeight: 4,
-  });
-
-  new google.maps.Marker({
-    position: { lat, lng },
-    map: map,
-    title: "You are here",
-  });
+  map = L.map("map").setView([lat, lng], 16);
+  L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png").addTo(map);
+  polyline = L.polyline([], { color: "red", weight: 4 }).addTo(map);
 }
 
-/* 🔹 3. START TRACKING */
-startBtn.addEventListener("click", () => {
-  statusEl.textContent = "Running...";
+// ▶ START RUN
+startBtn.onclick = () => {
   startBtn.disabled = true;
   stopBtn.disabled = false;
 
+  startTime = Date.now();
+  timerInterval = setInterval(updateTimer, 1000);
+
+  // 🔥 Create new run entry in Firebase
+  runId = push(ref(db, "runs")).key;
+
   watchId = navigator.geolocation.watchPosition(
-    (position) => {
-      const lat = position.coords.latitude;
-      const lng = position.coords.longitude;
+    pos => {
+      const { latitude, longitude, speed } = pos.coords;
 
-      const currentPoint = new google.maps.LatLng(lat, lng);
-      path.push(currentPoint);
-      polyline.setPath(path);
-      map.setCenter(currentPoint);
+      route.push([latitude, longitude]);
+      polyline.addLatLng([latitude, longitude]);
+      map.setView([latitude, longitude]);
 
-      if (lastPosition) {
-        totalDistance += calculateDistance(
-          lastPosition.lat,
-          lastPosition.lng,
-          lat,
-          lng
+      if (lastPos) {
+        totalDistance += getDistance(
+          lastPos.lat, lastPos.lng,
+          latitude, longitude
         );
-        distanceEl.textContent = totalDistance.toFixed(2) + " km";
       }
 
-      lastPosition = { lat, lng };
+      lastPos = { lat: latitude, lng: longitude };
+
+      distanceEl.textContent = totalDistance.toFixed(2) + " km";
+      speedEl.textContent = speed ? (speed * 3.6).toFixed(1) + " km/h" : "0.0 km/h";
+
+      // 🔥 SAVE LIVE DATA TO FIREBASE
+      set(ref(db, `runs/${runId}/live`), {
+        latitude,
+        longitude,
+        speed: speed ? (speed * 3.6).toFixed(1) : 0,
+        distance: totalDistance.toFixed(2),
+        time: Math.floor((Date.now() - startTime) / 1000),
+        timestamp: Date.now()
+      });
     },
-    () => alert("Location error"),
-    {
-      enableHighAccuracy: true,
-      maximumAge: 1000,
-      timeout: 5000,
-    }
+    () => alert("Tracking error"),
+    { enableHighAccuracy: true }
   );
-});
+};
 
-/* 🔹 4. STOP TRACKING */
-stopBtn.addEventListener("click", () => {
+// ⏹ STOP RUN
+stopBtn.onclick = () => {
   navigator.geolocation.clearWatch(watchId);
-  statusEl.textContent = "Stopped";
-  startBtn.disabled = false;
+  clearInterval(timerInterval);
   stopBtn.disabled = true;
-});
+  finishBtn.disabled = false;
+};
 
-/* 🔹 DISTANCE CALCULATION */
-function calculateDistance(lat1, lon1, lat2, lon2) {
+// 📊 FINISH RUN
+finishBtn.onclick = () => {
+  const totalTime = Math.floor((Date.now() - startTime) / 1000);
+  const calories = Math.round(totalDistance * 60);
+
+  // 🔥 SAVE FINAL RUN DATA
+  set(ref(db, `runs/${runId}/summary`), {
+    distance: totalDistance.toFixed(2),
+    time: totalTime,
+    calories,
+    route
+  });
+
+  localStorage.setItem("distance", totalDistance.toFixed(2));
+  localStorage.setItem("time", totalTime);
+  localStorage.setItem("route", JSON.stringify(route));
+
+  window.location.href = "summary.html";
+};
+
+// ⏱ TIMER
+function updateTimer() {
+  const diff = Date.now() - startTime;
+  const h = String(Math.floor(diff / 3600000)).padStart(2, "0");
+  const m = String(Math.floor(diff / 60000) % 60).padStart(2, "0");
+  const s = String(Math.floor(diff / 1000) % 60).padStart(2, "0");
+  timerEl.textContent = `${h}:${m}:${s}`;
+}
+
+// 📏 DISTANCE CALCULATION
+function getDistance(lat1, lon1, lat2, lon2) {
   const R = 6371;
-  const dLat = ((lat2 - lat1) * Math.PI) / 180;
-  const dLon = ((lon2 - lon1) * Math.PI) / 180;
-
+  const dLat = (lat2 - lat1) * Math.PI / 180;
+  const dLon = (lon2 - lon1) * Math.PI / 180;
   const a =
     Math.sin(dLat / 2) ** 2 +
-    Math.cos((lat1 * Math.PI) / 180) *
-      Math.cos((lat2 * Math.PI) / 180) *
-      Math.sin(dLon / 2) ** 2;
-
+    Math.cos(lat1 * Math.PI / 180) *
+    Math.cos(lat2 * Math.PI / 180) *
+    Math.sin(dLon / 2) ** 2;
   return 2 * R * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 }

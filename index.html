@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Running Tracker</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- Leaflet -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header>
+  <h1>🏃 Running Tracker</h1>
+  <p>Track your run live</p>
+  <button id="darkModeBtn">🌙 Dark Mode</button>
+</header>
+
+<div id="map"></div>
+
+<div class="info">
+  <div class="card">
+    <h3>Distance</h3>
+    <p id="distance">0.00 km</p>
+  </div>
+  <div class="card">
+    <h3>Time</h3>
+    <p id="timer">00:00:00</p>
+  </div>
+  <div class="card">
+    <h3>Speed</h3>
+    <p id="speed">0.0 km/h</p>
+  </div>
+</div>
+
+<div class="controls">
+  <button id="startBtn">▶ Start</button>
+  <button id="stopBtn" disabled>⏹ Stop</button>
+  <button id="finishBtn" disabled>📊 Finish</button>
+</div>
+
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+<script type="module" src="script.js"></script>
+</body>
+</html>

@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Run Summary</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css">
+</head>
+<body>
+
+<header>
+  <h1>📊 Run Summary</h1>
+  <p>Your run details</p>
+</header>
+
+<div class="info">
+  <div class="card">
+    <h3>Distance</h3>
+    <p id="sumDistance"></p>
+  </div>
+  <div class="card">
+    <h3>Time</h3>
+    <p id="sumTime"></p>
+  </div>
+  <div class="card">
+    <h3>Calories</h3>
+    <p id="sumCalories"></p>
+  </div>
+</div>
+
+<div id="map"></div>
+
+<div class="controls">
+  <button onclick="location.href='index.html'">🔁 New Run</button>
+</div>
+
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+<script src="summary.js"></script>
+</body>
+</html>
