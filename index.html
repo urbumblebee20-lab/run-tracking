@@ -2,42 +2,45 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Running Tracker</title>
+  <title>Run Tracker</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <!-- Leaflet -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css">
+
+  <!-- Font -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-<header>
-  <h1>🏃 Running Tracker</h1>
-  <p>Track your run live</p>
-  <button id="darkModeBtn">🌙 Dark Mode</button>
+<header class="top-bar">
+  <h1>🏃 RunTracker</h1>
+  <button id="darkBtn">🌙</button>
 </header>
 
 <div id="map"></div>
 
-<div class="info">
-  <div class="card">
-    <h3>Distance</h3>
-    <p id="distance">0.00 km</p>
+<section class="stats">
+  <div class="stat-card">
+    <span>Distance</span>
+    <h2 id="distance">0.00 km</h2>
   </div>
-  <div class="card">
-    <h3>Time</h3>
-    <p id="timer">00:00:00</p>
+  <div class="stat-card">
+    <span>Time</span>
+    <h2 id="timer">00:00:00</h2>
   </div>
-  <div class="card">
-    <h3>Speed</h3>
-    <p id="speed">0.0 km/h</p>
+  <div class="stat-card">
+    <span>Speed</span>
+    <h2 id="speed">0.0 km/h</h2>
   </div>
-</div>
+</section>
 
 <div class="controls">
-  <button id="startBtn">▶ Start</button>
-  <button id="stopBtn" disabled>⏹ Stop</button>
-  <button id="finishBtn" disabled>📊 Finish</button>
+  <button id="startBtn" class="start">▶</button>
+  <button id="stopBtn" class="stop" disabled>⏸</button>
+  <button id="finishBtn" class="finish" disabled>✔</button>
 </div>
 
 <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>

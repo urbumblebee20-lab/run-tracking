@@ -10,30 +10,30 @@
 </head>
 <body>
 
-<header>
+<header class="top-bar">
   <h1>📊 Run Summary</h1>
-  <p>Your run details</p>
+  <button id="darkBtn">🌙</button>
 </header>
 
-<div class="info">
-  <div class="card">
-    <h3>Distance</h3>
-    <p id="sumDistance"></p>
+<section class="stats">
+  <div class="stat-card">
+    <span>Distance</span>
+    <h2 id="sd"></h2>
   </div>
-  <div class="card">
-    <h3>Time</h3>
-    <p id="sumTime"></p>
+  <div class="stat-card">
+    <span>Time</span>
+    <h2 id="st"></h2>
   </div>
-  <div class="card">
-    <h3>Calories</h3>
-    <p id="sumCalories"></p>
+  <div class="stat-card">
+    <span>Calories</span>
+    <h2 id="sc"></h2>
   </div>
-</div>
+</section>
 
 <div id="map"></div>
 
 <div class="controls">
-  <button onclick="location.href='index.html'">🔁 New Run</button>
+  <button id="newRunBtn" class="start">🔁</button>
 </div>
 
 <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
